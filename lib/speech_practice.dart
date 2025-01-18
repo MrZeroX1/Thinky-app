@@ -13,6 +13,7 @@ class SpeechPracticePage extends StatefulWidget {
 class _SpeechPracticePageState extends State<SpeechPracticePage> {
   final AudioPlayer _audioPlayer = AudioPlayer();
   bool _isRecording = false;
+  bool _isCorrect = true; // Toggle between correct and incorrect
 
   // Play sound function
   Future<void> _playSound() async {
@@ -38,19 +39,19 @@ class _SpeechPracticePageState extends State<SpeechPracticePage> {
       _isRecording = false;
     });
 
-    // Simulate success or failure (replace with actual evaluation logic)
-    bool isCorrect = true; // Assume the recording is correct for now
+    // Update the progress based on current state of _isCorrect
     Provider.of<ProgressState>(context, listen: false)
-        .updateSpeechScore(isCorrect);
+        .updateSpeechScore(_isCorrect);
 
     // Show feedback
-    String feedback = isCorrect ? "Correct!" : "Try Again!";
+    String feedback = _isCorrect ? "Correct!" : "Try Again!";
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
           title: Text(feedback),
           actions: [
             TextButton(
@@ -61,6 +62,9 @@ class _SpeechPracticePageState extends State<SpeechPracticePage> {
         );
       },
     );
+
+    // Toggle between correct and incorrect for the next recording
+    _isCorrect = !_isCorrect;
   }
 
   @override
@@ -132,8 +136,7 @@ class _SpeechPracticePageState extends State<SpeechPracticePage> {
               child: Center(
                 child: Container(
                   padding: const EdgeInsets.symmetric(vertical: 30),
-                  width: MediaQuery.of(context).size.width *
-                      0.8, // 80% of the screen width
+                  width: MediaQuery.of(context).size.width * 0.8,
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(40),
@@ -173,8 +176,7 @@ class _SpeechPracticePageState extends State<SpeechPracticePage> {
                       ),
                       const SizedBox(height: 30),
                       GestureDetector(
-                        onTap: () => _evaluateRecording(
-                            context), // Evaluate recording and update progress
+                        onTap: () => _evaluateRecording(context),
                         child: Container(
                           width: 80,
                           height: 80,
